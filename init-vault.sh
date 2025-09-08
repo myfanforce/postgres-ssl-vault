@@ -3,7 +3,7 @@
 # exit as soon as any of these commands fail
 set -e
 
-echo "Initializing Supabase Vault extension..."
+echo "Initializing pgsodium extension (provides vault-like functionality)..."
 
 # Function to safely execute SQL with retries
 execute_sql() {
@@ -36,17 +36,17 @@ until pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do
     sleep 2
 done
 
-echo "PostgreSQL is ready, creating Vault extension..."
+echo "PostgreSQL is ready, creating pgsodium extension..."
 
-# Create the vault extension
-execute_sql "CREATE EXTENSION IF NOT EXISTS vault;"
+# Create the pgsodium extension
+execute_sql "CREATE EXTENSION IF NOT EXISTS pgsodium;"
 
 # Verify the extension was created
-if execute_sql "SELECT extname FROM pg_extension WHERE extname = 'vault';"; then
-    echo "Supabase Vault extension successfully installed and enabled!"
+if execute_sql "SELECT extname FROM pg_extension WHERE extname = 'pgsodium';"; then
+    echo "pgsodium extension successfully installed and enabled!"
 else
-    echo "Failed to verify Vault extension installation"
+    echo "Failed to verify pgsodium extension installation"
     exit 1
 fi
 
-echo "Vault extension initialization completed successfully!"
+echo "pgsodium extension initialization completed successfully!"

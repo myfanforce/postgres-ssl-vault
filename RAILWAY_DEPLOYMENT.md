@@ -1,6 +1,6 @@
 # Deploying to Railway
 
-This guide explains how to deploy the SSL-enabled PostgreSQL with Supabase Vault to Railway.
+This guide explains how to deploy the SSL-enabled PostgreSQL with pgsodium to Railway.
 
 ## Quick Deployment
 
@@ -34,19 +34,22 @@ Make sure your Railway volume is mounted to:
 
 This is crucial for data persistence and proper SSL certificate management.
 
-## Using the Vault Extension
+## Using the pgsodium Extension
 
-Once deployed, you can connect to your database and start using the Vault extension:
+Once deployed, you can connect to your database and start using the pgsodium extension:
 
 ```sql
--- Create a secret
-SELECT vault.create_secret('api_key', 'your-secret-api-key');
+-- Encrypt data
+SELECT pgsodium.crypto_secretbox('your-secret-data', pgsodium.randombytes_buf(32));
 
--- Read a secret
-SELECT vault.read_secret('api_key');
+-- Generate random keys
+SELECT pgsodium.randombytes_buf(32);
 
--- List all secrets
-SELECT * FROM vault.secrets;
+-- Hash passwords securely
+SELECT pgsodium.crypto_pwhash('your-password');
+
+-- List available functions
+SELECT proname FROM pg_proc WHERE pronamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'pgsodium');
 ```
 
 ## Connection Examples
@@ -69,6 +72,6 @@ If you're migrating from Supabase to Railway:
 2. Deploy this PostgreSQL image to Railway
 3. Import your data
 4. Update your application connection strings
-5. Migrate any vault secrets to the new system
+5. Migrate any secrets using pgsodium's cryptographic functions
 
-The Vault extension provides similar functionality to Supabase's secret management, making migration straightforward.
+The pgsodium extension provides robust cryptographic capabilities for secure data handling, making migration from Supabase straightforward.

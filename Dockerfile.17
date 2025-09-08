@@ -1,7 +1,7 @@
 ARG POSTGRES_VERSION=17
 FROM postgres:${POSTGRES_VERSION}
 
-# Install OpenSSL, sudo, and build dependencies for Supabase Vault
+# Install OpenSSL, sudo, and build dependencies for pgsodium
 RUN apt-get update && apt-get install -y \
     openssl \
     sudo \
@@ -10,15 +10,16 @@ RUN apt-get update && apt-get install -y \
     git \
     libssl-dev \
     pkg-config \
+    libsodium-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Supabase Vault extension
-RUN git clone https://github.com/supabase/vault.git /tmp/vault \
-    && cd /tmp/vault \
+# Install pgsodium extension (provides vault-like functionality)
+RUN git clone https://github.com/michelp/pgsodium.git /tmp/pgsodium \
+    && cd /tmp/pgsodium \
     && make \
     && make install \
     && cd / \
-    && rm -rf /tmp/vault
+    && rm -rf /tmp/pgsodium
 
 # Allow the postgres user to execute certain commands as root without a password
 RUN echo "postgres ALL=(root) NOPASSWD: /usr/bin/mkdir, /bin/chown, /usr/bin/openssl" > /etc/sudoers.d/postgres
