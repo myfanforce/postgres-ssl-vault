@@ -1,6 +1,6 @@
-# SSL-enabled Postgres DB image
+# SSL-enabled Postgres DB image with Supabase Vault
 
-This repository contains the logic to build SSL-enabled Postgres images.
+This repository contains the logic to build SSL-enabled Postgres images with the Supabase Vault extension pre-installed.
 
 By default, when you deploy Postgres from the official Postgres template on
 Railway, the image that is used is built from this repository!
@@ -10,17 +10,23 @@ Railway](https://railway.app/button.svg)](https://railway.app/template/postgres)
 
 ### Why though?
 
-The official Postgres image in Docker hub does not come with SSL baked in.
+The official Postgres image in Docker hub does not come with SSL baked in, and the Supabase Vault extension is not included.
 
 Since this could pose a problem for applications or services attempting to
-connect to Postgres services, we decided to roll our own Postgres image with SSL
-enabled right out of the box.
+connect to Postgres services securely or requiring secret management capabilities, we decided to roll our own Postgres image with:
+- SSL enabled right out of the box
+- Supabase Vault extension pre-installed for secure secret management
 
 ### How does it work?
 
 The Dockerfiles contained in this repository start with the official Postgres
-image as base. Then the `init-ssl.sh` script is copied into the
-`docker-entrypoint-initdb.d/` directory to be executed upon initialization.
+image as base. During the build process:
+
+1. The Supabase Vault extension is compiled and installed from source
+2. The `init-ssl.sh` script is copied into the `docker-entrypoint-initdb.d/` directory for SSL configuration
+3. The `init-vault.sh` script is copied into the `docker-entrypoint-initdb.d/` directory to enable the Vault extension
+
+Both scripts are executed upon database initialization.
 
 ### Certificate expiry
 
@@ -31,6 +37,40 @@ configuring the `SSL_CERT_DAYS` environment variable as needed.
 
 When a redeploy or restart is done the certificates expiry is checked, if it has
 expired or will expire in 30 days a new certificate is automatically generated.
+
+### Supabase Vault Extension
+
+The [Supabase Vault](https://github.com/supabase/vault) extension provides secure secret management capabilities within PostgreSQL. It allows you to:
+
+- Store and retrieve secrets securely within your database
+- Encrypt sensitive data at rest
+- Manage API keys, passwords, and other sensitive information
+- Integrate with your application's secret management workflow
+
+The extension is automatically enabled during database initialization and is ready to use immediately.
+
+#### Testing the Vault Extension
+
+You can test that the Vault extension is working properly by using the included test script:
+
+```bash
+# Run the test against a running container
+./test-vault-extension.sh your-container-name
+```
+
+Or manually verify the extension:
+
+```sql
+-- Check if the extension is available
+SELECT name FROM pg_available_extensions WHERE name = 'vault';
+
+-- Check if the extension is enabled
+SELECT extname FROM pg_extension WHERE extname = 'vault';
+
+-- Test basic functionality
+SELECT vault.create_secret('test-key', 'test-value');
+SELECT vault.read_secret('test-key');
+```
 
 ### Available image tags
 
@@ -52,6 +92,8 @@ docker run ghcr.io/railwayapp-templates/postgres-ssl:17
 # Pin to specific minor version (recommended for production)
 docker run ghcr.io/railwayapp-templates/postgres-ssl:17.6
 ```
+
+All images include both SSL support and the Supabase Vault extension pre-installed.
 
 ### A note about ports
 

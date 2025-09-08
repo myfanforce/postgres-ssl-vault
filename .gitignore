@@ -1,0 +1,28 @@
+# Docker build artifacts
+.dockerignore
+
+# Test containers and images
+*-test*
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+
+# Log files
+*.log
+
+# Environment files (if any)
+.env
+.env.local
+.env.*.local
