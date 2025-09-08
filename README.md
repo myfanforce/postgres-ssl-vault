@@ -78,11 +78,11 @@ SELECT pgsodium.randombytes_buf(16);
 Images are automatically built weekly and tagged with multiple version levels
 for flexibility:
 
-- **Major version tags** (e.g., `:17`, `:16`, `:15`): Always points to the
+- **Major version tags** (e.g., `:17`, `:16`): Always points to the
   latest minor version for that major release
 - **Minor version tags** (e.g., `:17.6`, `:16.10`): Pins to specific minor
   version for stability
-- **Latest tag** (`:latest`): Currently points to PostgreSQL 16
+- **Latest tag** (`:latest`): Currently points to PostgreSQL 17
 
 Example usage:
 

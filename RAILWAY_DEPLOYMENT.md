@@ -8,7 +8,7 @@ This guide explains how to deploy the SSL-enabled PostgreSQL with pgsodium to Ra
 2. **Choose "Deploy from Docker Image"**
 3. **Enter the image URL**:
    ```
-   ghcr.io/yourusername/postgres-ssl-vault:16
+   ghcr.io/yourusername/postgres-ssl-vault:17
    ```
    (Replace `yourusername` with your actual GitHub username)
 
