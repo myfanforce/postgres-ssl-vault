@@ -13,13 +13,21 @@ RUN apt-get update && apt-get install -y \
     libsodium-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install pgsodium extension (provides vault-like functionality)
+# Install pgsodium extension (required for Supabase Vault)
 RUN git clone https://github.com/michelp/pgsodium.git /tmp/pgsodium \
     && cd /tmp/pgsodium \
     && make \
     && make install \
     && cd / \
     && rm -rf /tmp/pgsodium
+
+# Install Supabase Vault extension
+RUN git clone https://github.com/supabase/vault.git /tmp/supabase-vault \
+    && cd /tmp/supabase-vault \
+    && make \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/supabase-vault
 
 # Allow the postgres user to execute certain commands as root without a password
 RUN echo "postgres ALL=(root) NOPASSWD: /usr/bin/mkdir, /bin/chown, /usr/bin/openssl" > /etc/sudoers.d/postgres
