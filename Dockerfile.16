@@ -1,7 +1,7 @@
 ARG POSTGRES_VERSION=16
 FROM postgres:${POSTGRES_VERSION}
 
-# Install OpenSSL, sudo, and build dependencies for pgsodium
+# Install OpenSSL, sudo, and build dependencies
 RUN apt-get update && apt-get install -y \
     openssl \
     sudo \
@@ -12,14 +12,6 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     libsodium-dev \
     && rm -rf /var/lib/apt/lists/*
-
-# Install pgsodium extension (required for Supabase Vault)
-RUN git clone https://github.com/michelp/pgsodium.git /tmp/pgsodium \
-    && cd /tmp/pgsodium \
-    && make \
-    && make install \
-    && cd / \
-    && rm -rf /tmp/pgsodium
 
 # Install Supabase Vault extension
 RUN git clone https://github.com/supabase/vault.git /tmp/supabase-vault \

@@ -38,19 +38,8 @@ done
 
 echo "PostgreSQL is ready, creating extensions..."
 
-# Create the pgsodium extension (required for Supabase Vault)
-execute_sql "CREATE EXTENSION IF NOT EXISTS pgsodium;"
-
 # Create the Supabase Vault extension
 execute_sql "CREATE EXTENSION IF NOT EXISTS supabase_vault;"
-
-# Verify both extensions were created
-if execute_sql "SELECT extname FROM pg_extension WHERE extname = 'pgsodium';"; then
-    echo "pgsodium extension successfully installed and enabled!"
-else
-    echo "Failed to verify pgsodium extension installation"
-    exit 1
-fi
 
 if execute_sql "SELECT extname FROM pg_extension WHERE extname = 'supabase_vault';"; then
     echo "supabase_vault extension successfully installed and enabled!"
