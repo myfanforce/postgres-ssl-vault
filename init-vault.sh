@@ -59,6 +59,21 @@ else
     exit 1
 fi
 
+# Verify pgsodium configuration
+echo "Verifying pgsodium configuration..."
+execute_sql "
+-- Check configuration
+SELECT 
+    setting as getkey_script_path
+FROM pg_settings 
+WHERE name = 'pgsodium.getkey_script';
+
+SELECT 
+    setting as preload_libraries
+FROM pg_settings 
+WHERE name = 'shared_preload_libraries';
+"
+
 # Test that the server key is working
 echo "Testing server-managed keys..."
 execute_sql "

@@ -33,7 +33,7 @@ RUN git clone https://github.com/supabase/vault.git /tmp/supabase-vault \
 RUN echo "postgres ALL=(root) NOPASSWD: /usr/bin/mkdir, /bin/chown, /usr/bin/openssl" > /etc/sudoers.d/postgres
 
 # Add pgsodium key generation script
-COPY --chmod=755 pgsodium_getkey.sh /usr/share/postgresql/extension/pgsodium_getkey.sh
+COPY --chmod=755 pgsodium_getkey.sh /usr/local/bin/pgsodium_getkey.sh
 
 # Add init scripts while setting permissions
 COPY --chmod=755 init-ssl.sh /docker-entrypoint-initdb.d/init-ssl.sh
@@ -42,4 +42,4 @@ COPY --chmod=755 wrapper.sh /usr/local/bin/wrapper.sh
 
 ENTRYPOINT ["wrapper.sh"]
 # Configure pgsodium in shared_preload_libraries and set the getkey script
-CMD ["postgres", "-p", "5432", "-c", "listen_addresses=*", "-c", "shared_preload_libraries=pgsodium", "-c", "pgsodium.getkey_script=/usr/share/postgresql/extension/pgsodium_getkey.sh"]
+CMD ["postgres", "-p", "5432", "-c", "listen_addresses=*", "-c", "shared_preload_libraries=pgsodium", "-c", "pgsodium.getkey_script=/usr/local/bin/pgsodium_getkey.sh"]

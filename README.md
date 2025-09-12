@@ -59,6 +59,13 @@ You can test that the pgsodium extension is working properly by using the includ
 ./test-vault-extension.sh your-container-name
 ```
 
+For debugging pgsodium configuration issues, use the debug script:
+
+```bash
+# Debug pgsodium server key configuration
+./debug-pgsodium.sh your-container-name
+```
+
 Or manually verify the extension:
 
 ```sql
@@ -68,10 +75,29 @@ SELECT name FROM pg_available_extensions WHERE name = 'pgsodium';
 -- Check if the extension is enabled
 SELECT extname FROM pg_extension WHERE extname = 'pgsodium';
 
+-- Verify server key configuration
+SHOW pgsodium.getkey_script;
+SHOW shared_preload_libraries;
+
 -- Test basic functionality
 SELECT pgsodium.crypto_secretbox('Hello, World!', pgsodium.randombytes_buf(32));
 SELECT pgsodium.randombytes_buf(16);
+
+-- Test server-managed keys (requires proper getkey_script configuration)
+SELECT pgsodium.derive_key(1, 32, 'test_context'::bytea);
+SELECT pgsodium.crypto_secretbox_new('test message');
 ```
+
+#### Server Key Configuration
+
+This image includes automatic server key management for pgsodium. The server key is:
+
+- **Automatically generated** on first startup using `/usr/local/bin/pgsodium_getkey.sh`
+- **Stored securely** in `$PGDATA/pgsodium_root.key` with 600 permissions
+- **Persistent** across container restarts (when using proper volume mounting)
+- **Required** for Supabase Vault extension to work properly
+
+The key generation script ensures a unique 32-byte (256-bit) key is created and maintained for each database instance, enabling secure server-managed encryption operations.
 
 ### Available image tags
 
